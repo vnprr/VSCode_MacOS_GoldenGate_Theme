@@ -1,0 +1,74 @@
+{
+  "name": "macos-golden-gate",
+  "displayName": "macOS Golden Gate",
+  "description": "A native-feeling macOS 27 Golden Gate theme suite for Visual Studio Code, grounded in Apple's refined Liquid Glass design.",
+  "version": "0.1.0",
+  "publisher": "jakub-local",
+  "license": "MIT",
+  "icon": "assets/extension-icon.png",
+  "preview": true,
+  "engines": {
+    "vscode": "^1.129.0"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "keywords": [
+    "macos",
+    "golden gate",
+    "liquid glass",
+    "apple",
+    "light theme",
+    "dark theme",
+    "product icons",
+    "file icons"
+  ],
+  "extensionKind": [
+    "ui"
+  ],
+  "galleryBanner": {
+    "color": "#201B18",
+    "theme": "dark"
+  },
+  "contributes": {
+    "themes": [
+      {
+        "label": "macOS Golden Gate — Light",
+        "uiTheme": "vs",
+        "path": "./themes/golden-gate-light-color-theme.json"
+      },
+      {
+        "label": "macOS Golden Gate — Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/golden-gate-dark-color-theme.json"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "macos-golden-gate-files",
+        "label": "macOS Golden Gate — Files",
+        "path": "./file-icons/golden-gate-file-icon-theme.json"
+      }
+    ],
+    "productIconThemes": [
+      {
+        "id": "macos-golden-gate-symbols",
+        "label": "macOS Golden Gate — Symbols",
+        "path": "./product-icons/golden-gate-product-icon-theme.json"
+      }
+    ]
+  },
+  "scripts": {
+    "build:themes": "node scripts/build-themes.mjs",
+    "build:file-icons": "node scripts/build-file-icons.mjs",
+    "build:product-icons": "node scripts/build-product-icons.mjs",
+    "build": "npm run build:themes && npm run build:file-icons && npm run build:product-icons",
+    "check": "node scripts/validate.mjs",
+    "prepare:dist": "node -e \"require('node:fs').mkdirSync('dist', { recursive: true })\"",
+    "package": "npm run build && npm run check && npm run prepare:dist && vsce package --allow-missing-repository --out dist/macos-golden-gate-0.1.0.vsix"
+  },
+  "devDependencies": {
+    "@phosphor-icons/web": "2.1.2",
+    "@vscode/vsce": "3.9.2"
+  }
+}

@@ -1,0 +1,303 @@
+import { access, readFile, readdir } from "node:fs/promises";
+import { dirname, extname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const errors = [];
+const notes = [];
+
+function fail(message) {
+  errors.push(message);
+}
+
+async function exists(path) {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function readJson(relativePath) {
+  const absolutePath = resolve(projectRoot, relativePath);
+  try {
+    return JSON.parse(await readFile(absolutePath, "utf8"));
+  } catch (error) {
+    fail(`${relativePath}: ${error.message}`);
+    return null;
+  }
+}
+
+async function walk(relativeDirectory) {
+  const absoluteDirectory = resolve(projectRoot, relativeDirectory);
+  if (!(await exists(absoluteDirectory))) return [];
+  const output = [];
+  for (const entry of await readdir(absoluteDirectory, { withFileTypes: true })) {
+    const relativePath = `${relativeDirectory}/${entry.name}`;
+    if (entry.isDirectory()) output.push(...(await walk(relativePath)));
+    else output.push(relativePath);
+  }
+  return output;
+}
+
+function isColor(value) {
+  return /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(
+    value
+  );
+}
+
+function toRgba(hex) {
+  let value = hex.slice(1);
+  if (value.length === 3 || value.length === 4) {
+    value = [...value].map((character) => character + character).join("");
+  }
+  if (value.length === 6) value += "FF";
+  return {
+    r: Number.parseInt(value.slice(0, 2), 16) / 255,
+    g: Number.parseInt(value.slice(2, 4), 16) / 255,
+    b: Number.parseInt(value.slice(4, 6), 16) / 255,
+    a: Number.parseInt(value.slice(6, 8), 16) / 255
+  };
+}
+
+function composite(top, bottom) {
+  const alpha = top.a + bottom.a * (1 - top.a);
+  if (alpha === 0) return { r: 0, g: 0, b: 0, a: 0 };
+  return {
+    r: (top.r * top.a + bottom.r * bottom.a * (1 - top.a)) / alpha,
+    g: (top.g * top.a + bottom.g * bottom.a * (1 - top.a)) / alpha,
+    b: (top.b * top.a + bottom.b * bottom.a * (1 - top.a)) / alpha,
+    a: alpha
+  };
+}
+
+function luminance(color) {
+  const convert = (channel) =>
+    channel <= 0.04045
+      ? channel / 12.92
+      : ((channel + 0.055) / 1.055) ** 2.4;
+  return (
+    0.2126 * convert(color.r) +
+    0.7152 * convert(color.g) +
+    0.0722 * convert(color.b)
+  );
+}
+
+function contrast(foreground, background, base) {
+  const baseColor = toRgba(base);
+  const backgroundColor = composite(toRgba(background), baseColor);
+  const foregroundColor = composite(toRgba(foreground), backgroundColor);
+  const lighter = Math.max(luminance(foregroundColor), luminance(backgroundColor));
+  const darker = Math.min(luminance(foregroundColor), luminance(backgroundColor));
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+function inspectColorValue(value, location) {
+  if (typeof value === "string" && value.startsWith("#") && !isColor(value)) {
+    fail(`${location}: invalid color ${value}`);
+  }
+}
+
+function inspectNestedColors(value, location) {
+  if (Array.isArray(value)) {
+    value.forEach((entry, index) => inspectNestedColors(entry, `${location}[${index}]`));
+    return;
+  }
+  if (!value || typeof value !== "object") {
+    inspectColorValue(value, location);
+    return;
+  }
+  for (const [key, nestedValue] of Object.entries(value)) {
+    inspectNestedColors(nestedValue, `${location}.${key}`);
+  }
+}
+
+async function validateThemes(packageJson) {
+  for (const contribution of packageJson.contributes?.themes ?? []) {
+    const relativePath = contribution.path.replace(/^\.\//, "");
+    const theme = await readJson(relativePath);
+    if (!theme) continue;
+    if (theme.name !== contribution.label) {
+      fail(`${relativePath}: theme name must match contribution label`);
+    }
+    const expectedType = contribution.uiTheme === "vs-dark" ? "dark" : "light";
+    if (theme.type !== expectedType) {
+      fail(`${relativePath}: expected type ${expectedType}, got ${theme.type}`);
+    }
+    if (Object.keys(theme.colors ?? {}).length < 500) {
+      fail(`${relativePath}: expected broad workbench coverage (at least 500 colors)`);
+    }
+    if ((theme.tokenColors ?? []).length < 25) {
+      fail(`${relativePath}: expected at least 25 TextMate rules`);
+    }
+    if (Object.keys(theme.semanticTokenColors ?? {}).length < 20) {
+      fail(`${relativePath}: expected at least 20 semantic token rules`);
+    }
+    inspectNestedColors(theme.colors, `${relativePath}.colors`);
+    inspectNestedColors(theme.tokenColors, `${relativePath}.tokenColors`);
+    inspectNestedColors(
+      theme.semanticTokenColors,
+      `${relativePath}.semanticTokenColors`
+    );
+
+    const base = theme.colors["editor.background"];
+    const contrastPairs = [
+      ["editor.foreground", "editor.background", 7],
+      ["sideBar.foreground", "sideBar.background", 7],
+      ["statusBar.foreground", "statusBar.background", 4.5],
+      ["button.foreground", "button.background", 4.5],
+      ["input.foreground", "input.background", 7],
+      ["textLink.foreground", "editor.background", 4.5]
+    ];
+    for (const [foregroundKey, backgroundKey, minimum] of contrastPairs) {
+      const ratio = contrast(
+        theme.colors[foregroundKey],
+        theme.colors[backgroundKey],
+        base
+      );
+      if (ratio < minimum) {
+        fail(
+          `${relativePath}: ${foregroundKey} on ${backgroundKey} is ${ratio.toFixed(2)}:1; expected ${minimum}:1`
+        );
+      }
+    }
+    notes.push(
+      `${contribution.label}: ${Object.keys(theme.colors).length} UI colors, ${theme.tokenColors.length} TextMate rules`
+    );
+  }
+}
+
+function collectDefinitionReferences(value, output = []) {
+  if (Array.isArray(value)) {
+    for (const entry of value) collectDefinitionReferences(entry, output);
+  } else if (value && typeof value === "object") {
+    for (const [key, nestedValue] of Object.entries(value)) {
+      if (key !== "iconDefinitions") collectDefinitionReferences(nestedValue, output);
+    }
+  } else if (typeof value === "string" && value.startsWith("_")) {
+    output.push(value);
+  }
+  return output;
+}
+
+async function validateFileIcons(packageJson) {
+  for (const contribution of packageJson.contributes?.iconThemes ?? []) {
+    const relativePath = contribution.path.replace(/^\.\//, "");
+    const manifest = await readJson(relativePath);
+    if (!manifest) continue;
+    const definitions = manifest.iconDefinitions ?? {};
+    if (Object.keys(definitions).length < 150) {
+      fail(`${relativePath}: expected at least 150 adaptive icon definitions`);
+    }
+    for (const [id, definition] of Object.entries(definitions)) {
+      if (!definition.iconPath) {
+        fail(`${relativePath}: ${id} has no iconPath`);
+        continue;
+      }
+      const iconPath = resolve(projectRoot, dirname(relativePath), definition.iconPath);
+      if (!(await exists(iconPath))) {
+        fail(`${relativePath}: missing icon for ${id}: ${definition.iconPath}`);
+      }
+    }
+    const references = collectDefinitionReferences(manifest);
+    for (const reference of references) {
+      if (!definitions[reference]) {
+        fail(`${relativePath}: undefined icon reference ${reference}`);
+      }
+    }
+    notes.push(
+      `${contribution.label}: ${Object.keys(definitions).length} adaptive definitions, ${references.length} associations`
+    );
+  }
+
+  const svgFiles = await walk("icons/files");
+  if (svgFiles.length < 300) {
+    fail(`icons/files: expected at least 300 light/dark SVG assets, got ${svgFiles.length}`);
+  }
+  for (const relativePath of svgFiles.filter((path) => extname(path) === ".svg")) {
+    const source = await readFile(resolve(projectRoot, relativePath), "utf8");
+    if (!source.includes("<svg") || !source.includes("</svg>")) {
+      fail(`${relativePath}: malformed SVG wrapper`);
+    }
+    if (/<script\b|<foreignObject\b|\b(?:xlink:)?href\s*=/i.test(source)) {
+      fail(`${relativePath}: SVG contains disallowed active or external content`);
+    }
+  }
+}
+
+async function validateProductIcons(packageJson) {
+  for (const contribution of packageJson.contributes?.productIconThemes ?? []) {
+    const relativePath = contribution.path.replace(/^\.\//, "");
+    const manifest = await readJson(relativePath);
+    if (!manifest) continue;
+    if ((manifest.fonts ?? []).length === 0) {
+      fail(`${relativePath}: no product icon font declared`);
+    }
+    for (const font of manifest.fonts ?? []) {
+      for (const source of font.src ?? []) {
+        const fontPath = resolve(projectRoot, dirname(relativePath), source.path);
+        if (!(await exists(fontPath))) {
+          fail(`${relativePath}: missing font ${source.path}`);
+        }
+      }
+    }
+    const definitions = manifest.iconDefinitions ?? {};
+    if (Object.keys(definitions).length < 100) {
+      fail(`${relativePath}: expected at least 100 product icon overrides`);
+    }
+    for (const [id, definition] of Object.entries(definitions)) {
+      if (!definition.fontCharacter || typeof definition.fontCharacter !== "string") {
+        fail(`${relativePath}: ${id} has no fontCharacter`);
+      }
+    }
+    notes.push(
+      `${contribution.label}: ${Object.keys(definitions).length} rounded product glyph overrides`
+    );
+  }
+}
+
+async function validatePackagePaths(packageJson) {
+  for (const collection of ["themes", "iconThemes", "productIconThemes"]) {
+    for (const contribution of packageJson.contributes?.[collection] ?? []) {
+      const path = contribution.path.replace(/^\.\//, "");
+      if (!(await exists(resolve(projectRoot, path)))) {
+        fail(`package.json: missing ${collection} contribution ${contribution.path}`);
+      }
+    }
+  }
+  if (!(await exists(resolve(projectRoot, "assets/licenses/PHOSPHOR-ICONS-MIT.txt")))) {
+    fail("Missing Phosphor Icons attribution/license file");
+  }
+
+  const projectFiles = (
+    await Promise.all(
+      ["themes", "icons", "product-icons", "file-icons", "assets"].map((directory) =>
+        walk(directory)
+      )
+    )
+  ).flat();
+  const bundledAppleFont = projectFiles.find((path) =>
+    /(?:sfpro|sfmono|sfns|sfsymbol).+\.(?:ttf|otf|woff2?)$/i.test(path)
+  );
+  if (bundledAppleFont) {
+    fail(`Proprietary Apple font/symbol asset must not be bundled: ${bundledAppleFont}`);
+  }
+}
+
+const packageJson = await readJson("package.json");
+if (packageJson) {
+  await validatePackagePaths(packageJson);
+  await validateThemes(packageJson);
+  await validateFileIcons(packageJson);
+  await validateProductIcons(packageJson);
+}
+
+if (errors.length > 0) {
+  console.error("Golden Gate validation failed:\n");
+  for (const error of errors) console.error(`- ${error}`);
+  process.exitCode = 1;
+} else {
+  console.log("Golden Gate validation passed.\n");
+  for (const note of notes) console.log(`- ${note}`);
+}

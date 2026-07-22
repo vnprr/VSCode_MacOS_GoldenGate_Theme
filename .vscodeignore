@@ -1,0 +1,10 @@
+.git/**
+.gitignore
+.github/**
+.vscode/**
+node_modules/**
+dist/**
+scripts/**
+*.vsix
+*.log
+.DS_Store

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <linearGradient id="folder" x1="2.2" y1="2.4" x2="13.7" y2="14.2" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A18DE9" stop-opacity=".88"/>
+      <stop offset="1" stop-color="#A18DE9" stop-opacity=".82"/>
+    </linearGradient>
+  </defs>
+  <path d="M1.55 5.55h12.9l-1.28 7.1c-.15.85-.88 1.47-1.75 1.47H3.02c-.86 0-1.6-.62-1.75-1.47L.64 8.93c-.17-.98.58-1.88 1.58-1.88h2.22l.94-1.5h8.94" fill="url(#folder)" stroke="#F3D799" stroke-opacity=".72" stroke-width=".68" stroke-linejoin="round"/>
+  <path d="M2.35 8.3c2.65-.62 7.55-.62 11.02.04" fill="none" stroke="#FFFFFF" stroke-width=".62" stroke-linecap="round" opacity=".35"/>
+  <rect x="7.02" y="8.2" width="6.25" height="4.15" rx="1.86" fill="#FFFFFF" fill-opacity=".22" stroke="#FFFFFF" stroke-opacity=".35" stroke-width=".42"/>
+  <text x="10.15" y="11.03" text-anchor="middle" fill="#FFFFFF" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif" font-size="3.9" font-weight="760" letter-spacing="-.1">UI</text>
+</svg>
