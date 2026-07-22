@@ -21,6 +21,7 @@
   "workbench.editor.tabActionLocation": "left",
   "workbench.editor.tabSizing": "shrink",
   "workbench.editor.pinnedTabSizing": "compact",
+  "workbench.editor.titleScrollbarVisibility": "auto",
   "window.density.editorTabHeight": "compact",
   "workbench.editor.highlightModifiedTabs": true,
   "workbench.editor.wrapTabs": false,
@@ -45,6 +46,8 @@
   "editor.padding.top": 8,
   "editor.padding.bottom": 8,
   "editor.minimap.enabled": false,
+  "editor.scrollbar.vertical": "auto",
+  "editor.scrollbar.horizontal": "auto",
   "editor.scrollbar.verticalScrollbarSize": 10,
   "editor.scrollbar.horizontalScrollbarSize": 10,
 

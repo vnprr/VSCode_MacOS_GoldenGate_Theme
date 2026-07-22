@@ -185,6 +185,27 @@ async function validateThemes(packageJson) {
         );
       }
     }
+    if (
+      theme.colors["list.activeSelectionBackground"] !==
+      theme.colors["tab.activeBackground"]
+    ) {
+      fail(
+        `${relativePath}: drag preview surface must match the active Modern UI tab`
+      );
+    }
+    if (!/^#[0-9a-f]{6}$/i.test(theme.colors["tab.activeBackground"])) {
+      fail(`${relativePath}: tab.activeBackground must be an opaque fade-matched surface`);
+    }
+    const neutralDropSurfaces = [
+      "list.dropBackground",
+      "sideBar.dropBackground",
+      "editorGroup.dropBackground",
+      "panelSection.dropBackground",
+      "terminal.dropBackground"
+    ];
+    if (new Set(neutralDropSurfaces.map((key) => theme.colors[key])).size !== 1) {
+      fail(`${relativePath}: drop surfaces must share one neutral material`);
+    }
     notes.push(
       `${contribution.label}: ${Object.keys(theme.colors).length} UI colors, ${theme.tokenColors.length} TextMate rules`
     );
@@ -283,10 +304,36 @@ async function validateProductIcons(packageJson) {
     }
     const dirty = definitions["circle-filled"];
     if (
-      dirty?.fontId !== "phosphor-regular" ||
-      dirty?.fontCharacter !== "\\ece0"
+      dirty?.fontId !== "golden-gate-controls" ||
+      dirty?.fontCharacter !== "\\e001"
     ) {
-      fail(`${relativePath}: circle-filled must use Phosphor dot-outline`);
+      fail(`${relativePath}: circle-filled must use the compact filled dot`);
+    }
+    const terminalSuccess = definitions["terminal-decoration-success"];
+    if (
+      terminalSuccess?.fontId !== "golden-gate-controls" ||
+      terminalSuccess?.fontCharacter !== "\\e001"
+    ) {
+      fail(`${relativePath}: terminal success decoration must use the compact filled dot`);
+    }
+    const controlsFont = (manifest.fonts ?? []).find(
+      (font) => font.id === "golden-gate-controls"
+    );
+    const controlsSource = controlsFont?.src?.[0]?.path;
+    if (!controlsSource) {
+      fail(`${relativePath}: compact controls font is missing`);
+    } else {
+      const controlsPath = resolve(projectRoot, dirname(relativePath), controlsSource);
+      const opentypeModule = await import("opentype.js");
+      const opentype = opentypeModule.default ?? opentypeModule;
+      const font = opentype.loadSync(controlsPath);
+      const dotGlyph = font.charToGlyph(String.fromCodePoint(0xe001));
+      const closedContours = dotGlyph.path.commands.filter(
+        (command) => command.type === "Z"
+      ).length;
+      if (closedContours !== 1) {
+        fail(`${relativePath}: filled dot must contain one solid contour without a hole`);
+      }
     }
     notes.push(
       `${contribution.label}: ${Object.keys(definitions).length} rounded product glyph overrides`
@@ -365,6 +412,13 @@ async function validateOneClickExperience(packageJson) {
   }
   if (preset["workbench.editor.tabSizing"] !== "shrink") {
     fail("appearance-preset.json: tabSizing must use the clean drag preview path");
+  }
+  if (
+    preset["editor.scrollbar.vertical"] !== "auto" ||
+    preset["editor.scrollbar.horizontal"] !== "auto" ||
+    preset["workbench.editor.titleScrollbarVisibility"] !== "auto"
+  ) {
+    fail("appearance-preset.json: supported scrollbars must use automatic visibility");
   }
   notes.push(`One-click appearance preset: ${presetKeys.length} managed settings`);
 }

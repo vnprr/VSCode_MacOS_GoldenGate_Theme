@@ -17,6 +17,7 @@ const FONT_FILE = 'Phosphor-Regular.woff2';
 const CONTROLS_FONT_ID = 'golden-gate-controls';
 const CONTROLS_FONT_FILE = 'GoldenGateControls.ttf';
 const COMPACT_CLOSE_CODE_POINT = 0xe000;
+const FILLED_DOT_CODE_POINT = 0xe001;
 const COMPACT_CLOSE_SCALE = 0.7;
 
 // Layout glyphs encode direction, docking and visibility. Phosphor does not
@@ -162,7 +163,7 @@ const ICON_GROUPS = {
     'circle-small', 'circle-small-filled', 'record', 'record-small',
     'ports-forwarded-with-process-icon',
     'ports-forwarded-without-process-icon', 'terminal-decoration-incomplete',
-    'terminal-decoration-mark', 'terminal-decoration-success',
+    'terminal-decoration-mark',
     'testing-unset-icon', 'getting-started-step-unchecked',
     'debug-breakpoint', 'debug-breakpoint-conditional',
     'debug-breakpoint-data', 'debug-breakpoint-function',
@@ -642,18 +643,19 @@ function buildIconDefinitions(glyphs) {
     }
   }
 
-  // These two aliases are the controls used by editor tabs. A dedicated font
-  // lets the close glyph be genuinely smaller because product icon themes do
-  // not expose a per-icon font-size. The dirty state uses Phosphor's compact
-  // outlined dot instead of the much larger filled circle.
+  // These aliases are compact controls used by editor tabs and the terminal
+  // command guide. A dedicated font is required because product icon themes
+  // do not expose a per-icon font-size.
   definitions.close = {
     fontCharacter: `\\${COMPACT_CLOSE_CODE_POINT.toString(16)}`,
     fontId: CONTROLS_FONT_ID,
   };
-  definitions['circle-filled'] = {
-    fontCharacter: `\\${glyphs.get('dot-outline')}`,
-    fontId: FONT_ID,
-  };
+  for (const iconId of ['circle-filled', 'terminal-decoration-success']) {
+    definitions[iconId] = {
+      fontCharacter: `\\${FILLED_DOT_CODE_POINT.toString(16)}`,
+      fontId: CONTROLS_FONT_ID,
+    };
+  }
 
   return Object.fromEntries(Object.entries(definitions).sort(([left], [right]) => left.localeCompare(right)));
 }
@@ -677,8 +679,17 @@ function transformPath(opentype, sourcePath, scale, centerX, centerY) {
   return path;
 }
 
-function buildControlsFont(opentype, sourceFont, xCodePoint) {
+function firstContour(opentype, sourcePath) {
+  const path = new opentype.Path();
+  const closeIndex = sourcePath.commands.findIndex((command) => command.type === 'Z');
+  if (closeIndex < 0) throw new Error('Expected dot-outline to contain a closed outer contour.');
+  path.commands = sourcePath.commands.slice(0, closeIndex + 1).map((command) => ({ ...command }));
+  return path;
+}
+
+function buildControlsFont(opentype, sourceFont, xCodePoint, dotOutlineCodePoint) {
   const sourceGlyph = sourceFont.charToGlyph(String.fromCodePoint(xCodePoint));
+  const sourceDotOutlineGlyph = sourceFont.charToGlyph(String.fromCodePoint(dotOutlineCodePoint));
   const bounds = sourceGlyph.getBoundingBox();
   const centerX = (bounds.x1 + bounds.x2) / 2;
   const centerY = (bounds.y1 + bounds.y2) / 2;
@@ -702,6 +713,12 @@ function buildControlsFont(opentype, sourceFont, xCodePoint) {
       unicode: COMPACT_CLOSE_CODE_POINT,
       advanceWidth: sourceGlyph.advanceWidth,
       path: closePath,
+    }),
+    new opentype.Glyph({
+      name: 'filled-dot',
+      unicode: FILLED_DOT_CODE_POINT,
+      advanceWidth: sourceDotOutlineGlyph.advanceWidth,
+      path: firstContour(opentype, sourceDotOutlineGlyph.path),
     }),
   ];
 
@@ -741,10 +758,11 @@ async function main() {
   const css = await readFile(regularCssPath, 'utf8');
   const glyphs = parseGlyphs(css);
   const xCodePoint = Number.parseInt(glyphs.get('x'), 16);
+  const dotOutlineCodePoint = Number.parseInt(glyphs.get('dot-outline'), 16);
   const opentypeModule = await import('opentype.js');
   const opentype = opentypeModule.default ?? opentypeModule;
   const sourceFont = opentype.loadSync(path.join(path.dirname(regularCssPath), 'Phosphor.ttf'));
-  const controlsFont = buildControlsFont(opentype, sourceFont, xCodePoint);
+  const controlsFont = buildControlsFont(opentype, sourceFont, xCodePoint, dotOutlineCodePoint);
   const iconDefinitions = buildIconDefinitions(glyphs);
   const theme = {
     $schema: 'vscode://schemas/product-icon-theme',

@@ -2,7 +2,7 @@
   "name": "macos-golden-gate",
   "displayName": "macOS Golden Gate",
   "description": "A native-feeling macOS 27 Golden Gate theme suite for Visual Studio Code, grounded in Apple's refined Liquid Glass design.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "publisher": "jakub-local",
   "license": "MIT",
   "icon": "assets/extension-icon.png",

@@ -410,8 +410,8 @@
       "fontId": "phosphor-regular"
     },
     "circle-filled": {
-      "fontCharacter": "\\ece0",
-      "fontId": "phosphor-regular"
+      "fontCharacter": "\\e001",
+      "fontId": "golden-gate-controls"
     },
     "circle-large": {
       "fontCharacter": "\\e18a",
@@ -2946,8 +2946,8 @@
       "fontId": "phosphor-regular"
     },
     "terminal-decoration-success": {
-      "fontCharacter": "\\e18a",
-      "fontId": "phosphor-regular"
+      "fontCharacter": "\\e001",
+      "fontId": "golden-gate-controls"
     },
     "terminal-git-bash": {
       "fontCharacter": "\\e47e",

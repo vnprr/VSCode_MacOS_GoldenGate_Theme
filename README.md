@@ -1,9 +1,14 @@
 # macOS Golden Gate for VS Code
 
-Motyw inspirowany macOS Liquid Glass. Zmienia kolory, ikony, font edytora i układ VS Code.
+A theme inspired by macOS Liquid Glass. It changes the colors, icons, editor font, and layout of VS Code.
 
-## Instalacja
+## Install
 
-1. Pobierz `macos-golden-gate.vsix`.
-2. W VS Code wybierz `Extensions → … → Install from VSIX`.
-3. Włącz `macOS Golden Gate — Light` albo `Dark`.
+1. Download `macos-golden-gate.vsix`.
+2. Inside VS Code go to `Extensions` / `…` / `Install from VSIX`.
+3. Change the app theme to `macOS Golden Gate - Light` or `Dark`.
+
+## Remove
+
+1. Find `macOS Golden Gate` in Extensions.
+2. Select `Uninstall`.
