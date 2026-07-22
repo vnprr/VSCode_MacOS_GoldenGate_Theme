@@ -162,6 +162,29 @@ async function validateThemes(packageJson) {
         );
       }
     }
+
+    const selectedControlForegrounds = [
+      "activityBar.foreground",
+      "activityBarTop.foreground"
+    ];
+    for (const colorKey of selectedControlForegrounds) {
+      if (theme.colors[colorKey] !== theme.colors.foreground) {
+        fail(
+          `${relativePath}: ${colorKey} must match foreground for selected controls`
+        );
+      }
+    }
+    const passiveControlForegrounds = [
+      "icon.foreground",
+      "titleBar.activeForeground"
+    ];
+    for (const colorKey of passiveControlForegrounds) {
+      if (theme.colors[colorKey] !== theme.colors.descriptionForeground) {
+        fail(
+          `${relativePath}: ${colorKey} must match descriptionForeground so passive Codicons and product icons share one neutral toolbar color`
+        );
+      }
+    }
     notes.push(
       `${contribution.label}: ${Object.keys(theme.colors).length} UI colors, ${theme.tokenColors.length} TextMate rules`
     );
@@ -251,6 +274,20 @@ async function validateProductIcons(packageJson) {
         fail(`${relativePath}: ${id} has no fontCharacter`);
       }
     }
+    const close = definitions.close;
+    if (
+      close?.fontId !== "golden-gate-controls" ||
+      close?.fontCharacter !== "\\e000"
+    ) {
+      fail(`${relativePath}: close must use the compact Golden Gate control glyph`);
+    }
+    const dirty = definitions["circle-filled"];
+    if (
+      dirty?.fontId !== "phosphor-regular" ||
+      dirty?.fontCharacter !== "\\ece0"
+    ) {
+      fail(`${relativePath}: circle-filled must use Phosphor dot-outline`);
+    }
     notes.push(
       `${contribution.label}: ${Object.keys(definitions).length} rounded product glyph overrides`
     );
@@ -285,9 +322,57 @@ async function validatePackagePaths(packageJson) {
   }
 }
 
+async function validateOneClickExperience(packageJson) {
+  const mainPath = packageJson.main?.replace(/^\.\//, "");
+  if (!mainPath || !(await exists(resolve(projectRoot, mainPath)))) {
+    fail(`package.json: missing one-click extension entry point ${packageJson.main ?? "(none)"}`);
+  }
+  if (!(packageJson.activationEvents ?? []).includes("*")) {
+    fail('package.json: one-click appearance manager must activate with "*"');
+  }
+  if ((packageJson.contributes?.commands ?? []).length > 0) {
+    fail("package.json: the appearance must not require contributed commands");
+  }
+
+  const preset = await readJson("appearance-preset.json");
+  const workspaceSettings = await readJson(".vscode/settings.json");
+  if (!preset || !workspaceSettings) return;
+
+  const workspaceAppearance = { ...workspaceSettings };
+  delete workspaceAppearance["workbench.colorTheme"];
+  const presetKeys = Object.keys(preset).sort();
+  const workspaceKeys = Object.keys(workspaceAppearance).sort();
+  if (JSON.stringify(presetKeys) !== JSON.stringify(workspaceKeys)) {
+    fail("appearance-preset.json: keys must match .vscode/settings.json except workbench.colorTheme");
+  }
+  for (const [key, value] of Object.entries(preset)) {
+    if (JSON.stringify(value) !== JSON.stringify(workspaceAppearance[key])) {
+      fail(`appearance-preset.json: ${key} differs from .vscode/settings.json`);
+    }
+  }
+
+  if (preset["workbench.iconTheme"] !== "macos-golden-gate-files") {
+    fail("appearance-preset.json: file icon theme is not enabled");
+  }
+  if (preset["workbench.productIconTheme"] !== "macos-golden-gate-symbols") {
+    fail("appearance-preset.json: product icon theme is not enabled");
+  }
+  if (!String(preset["editor.fontFamily"]).includes("SF Mono")) {
+    fail("appearance-preset.json: editor does not prefer SF Mono");
+  }
+  if (!String(preset["terminal.integrated.fontFamily"]).includes("SF Mono")) {
+    fail("appearance-preset.json: terminal does not prefer SF Mono");
+  }
+  if (preset["workbench.editor.tabSizing"] !== "shrink") {
+    fail("appearance-preset.json: tabSizing must use the clean drag preview path");
+  }
+  notes.push(`One-click appearance preset: ${presetKeys.length} managed settings`);
+}
+
 const packageJson = await readJson("package.json");
 if (packageJson) {
   await validatePackagePaths(packageJson);
+  await validateOneClickExperience(packageJson);
   await validateThemes(packageJson);
   await validateFileIcons(packageJson);
   await validateProductIcons(packageJson);

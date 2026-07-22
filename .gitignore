@@ -1,6 +1,8 @@
 node_modules/
 dist/
+docs/
 *.vsix
+!macos-golden-gate.vsix
 .DS_Store
 *.log
-
+.vscode

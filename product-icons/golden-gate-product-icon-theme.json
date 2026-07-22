@@ -11,6 +11,17 @@
       ],
       "weight": "normal",
       "style": "normal"
+    },
+    {
+      "id": "golden-gate-controls",
+      "src": [
+        {
+          "path": "./fonts/GoldenGateControls.ttf",
+          "format": "truetype"
+        }
+      ],
+      "weight": "normal",
+      "style": "normal"
     }
   ],
   "iconDefinitions": {
@@ -24,14 +35,6 @@
     },
     "activate-breakpoints": {
       "fontCharacter": "\\e3de",
-      "fontId": "phosphor-regular"
-    },
-    "activity-bar-left": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
-    "activity-bar-right": {
-      "fontCharacter": "\\ec24",
       "fontId": "phosphor-regular"
     },
     "add": {
@@ -186,24 +189,8 @@
       "fontCharacter": "\\e4f6",
       "fontId": "phosphor-regular"
     },
-    "auxiliarybar-left-layout-icon": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
-    "auxiliarybar-left-off-layout-icon": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
     "auxiliarybar-maximize": {
       "fontCharacter": "\\e1d0",
-      "fontId": "phosphor-regular"
-    },
-    "auxiliarybar-right-layout-icon": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
-    "auxiliarybar-right-off-layout-icon": {
-      "fontCharacter": "\\ec24",
       "fontId": "phosphor-regular"
     },
     "azure": {
@@ -423,7 +410,7 @@
       "fontId": "phosphor-regular"
     },
     "circle-filled": {
-      "fontCharacter": "\\e18a",
+      "fontCharacter": "\\ece0",
       "fontId": "phosphor-regular"
     },
     "circle-large": {
@@ -467,8 +454,8 @@
       "fontId": "phosphor-regular"
     },
     "close": {
-      "fontCharacter": "\\e4f6",
-      "fontId": "phosphor-regular"
+      "fontCharacter": "\\e000",
+      "fontId": "golden-gate-controls"
     },
     "close-all": {
       "fontCharacter": "\\ec54",
@@ -568,10 +555,6 @@
     },
     "compass-dot": {
       "fontCharacter": "\\e1c8",
-      "fontId": "phosphor-regular"
-    },
-    "configure-layout-icon": {
-      "fontCharacter": "\\e6d6",
       "fontId": "phosphor-regular"
     },
     "copilot": {
@@ -972,10 +955,6 @@
     },
     "edit-sparkle": {
       "fontCharacter": "\\e3b4",
-      "fontId": "phosphor-regular"
-    },
-    "editor-layout": {
-      "fontCharacter": "\\e6d6",
       "fontId": "phosphor-regular"
     },
     "ellipsis": {
@@ -1646,82 +1625,6 @@
       "fontCharacter": "\\e466",
       "fontId": "phosphor-regular"
     },
-    "layout": {
-      "fontCharacter": "\\e6d6",
-      "fontId": "phosphor-regular"
-    },
-    "layout-activitybar-left": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
-    "layout-activitybar-right": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
-    "layout-centered": {
-      "fontCharacter": "\\e546",
-      "fontId": "phosphor-regular"
-    },
-    "layout-menubar": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
-    "layout-panel": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
-    "layout-panel-center": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
-    "layout-panel-dock": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
-    "layout-panel-justify": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
-    "layout-panel-left": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
-    "layout-panel-off": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
-    "layout-panel-right": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
-    "layout-sidebar-left": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
-    "layout-sidebar-left-dock": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
-    "layout-sidebar-left-off": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
-    "layout-sidebar-right": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
-    "layout-sidebar-right-dock": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
-    "layout-sidebar-right-off": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
-    "layout-statusbar": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
     "library": {
       "fontCharacter": "\\e260",
       "fontId": "phosphor-regular"
@@ -2182,56 +2085,12 @@
       "fontCharacter": "\\e392",
       "fontId": "phosphor-regular"
     },
-    "panel-align-center": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
-    "panel-align-justify": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
-    "panel-align-left": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
-    "panel-align-right": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
-    "panel-bottom": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
     "panel-close": {
       "fontCharacter": "\\e4f6",
       "fontId": "phosphor-regular"
     },
-    "panel-layout-icon": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
-    "panel-layout-icon-off": {
-      "fontCharacter": "\\e5a2",
-      "fontId": "phosphor-regular"
-    },
-    "panel-left": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
-    "panel-left-off": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
     "panel-maximize": {
       "fontCharacter": "\\e1d0",
-      "fontId": "phosphor-regular"
-    },
-    "panel-right": {
-      "fontCharacter": "\\ec24",
-      "fontId": "phosphor-regular"
-    },
-    "panel-right-off": {
-      "fontCharacter": "\\ec24",
       "fontId": "phosphor-regular"
     },
     "parameter-hints-next": {

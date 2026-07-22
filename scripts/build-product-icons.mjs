@@ -14,6 +14,30 @@ const licenseRoot = path.join(projectRoot, 'assets', 'licenses');
 const PHOSPHOR_VERSION = '2.1.2';
 const FONT_ID = 'phosphor-regular';
 const FONT_FILE = 'Phosphor-Regular.woff2';
+const CONTROLS_FONT_ID = 'golden-gate-controls';
+const CONTROLS_FONT_FILE = 'GoldenGateControls.ttf';
+const COMPACT_CLOSE_CODE_POINT = 0xe000;
+const COMPACT_CLOSE_SCALE = 0.7;
+
+// Layout glyphs encode direction, docking and visibility. Phosphor does not
+// provide every exact state, while VS Code's own Codicons do. Omitting these
+// IDs is the official product-icon-theme fallback and preserves their meaning.
+const NATIVE_LAYOUT_ICON_IDS = new Set([
+  'layout', 'editor-layout', 'configure-layout-icon',
+  'layout-activitybar-left', 'layout-activitybar-right',
+  'layout-sidebar-left', 'layout-sidebar-left-dock', 'layout-sidebar-left-off',
+  'layout-sidebar-right', 'layout-sidebar-right-dock', 'layout-sidebar-right-off',
+  'activity-bar-left', 'activity-bar-right',
+  'auxiliarybar-left-layout-icon', 'auxiliarybar-left-off-layout-icon',
+  'auxiliarybar-right-layout-icon', 'auxiliarybar-right-off-layout-icon',
+  'panel-left', 'panel-left-off', 'panel-right', 'panel-right-off',
+  'layout-panel', 'layout-panel-center', 'layout-panel-dock',
+  'layout-panel-justify', 'layout-panel-left', 'layout-panel-off',
+  'layout-panel-right', 'panel-bottom', 'panel-layout-icon',
+  'panel-layout-icon-off', 'panel-align-center', 'panel-align-justify',
+  'panel-align-left', 'panel-align-right', 'layout-menubar',
+  'layout-statusbar', 'layout-centered',
+]);
 
 // Product icon IDs are grouped by the Phosphor Regular glyph that replaces
 // them. Keeping the aliases here makes the generated JSON deterministic and
@@ -105,7 +129,7 @@ const ICON_GROUPS = {
     'diff-review-remove', 'dash', 'horizontal-rule',
   ],
   'x': [
-    'close', 'chrome-close', 'auxiliarybar-close', 'color-picker-close',
+    'chrome-close', 'auxiliarybar-close', 'color-picker-close',
     'diff-review-close', 'panel-close', 'ports-stop-forward-icon',
     'search-remove', 'settings-remove', 'terminal-command-history-remove',
     'widget-close', 'workspace-trust-editor-cross', 'notifications-clear',
@@ -134,7 +158,7 @@ const ICON_GROUPS = {
     'testing-passed-icon', 'git-branch-staged-changes',
   ],
   'circle': [
-    'circle', 'circle-filled', 'circle-large', 'circle-large-filled',
+    'circle', 'circle-large', 'circle-large-filled',
     'circle-small', 'circle-small-filled', 'record', 'record-small',
     'ports-forwarded-with-process-icon',
     'ports-forwarded-without-process-icon', 'terminal-decoration-incomplete',
@@ -603,6 +627,8 @@ function buildIconDefinitions(glyphs) {
     }
 
     for (const iconId of iconIds) {
+      if (NATIVE_LAYOUT_ICON_IDS.has(iconId)) continue;
+
       const previous = assignedBy.get(iconId);
       if (previous && previous !== phosphorName) {
         throw new Error(`Product icon "${iconId}" is assigned to both "${previous}" and "${phosphorName}".`);
@@ -616,7 +642,82 @@ function buildIconDefinitions(glyphs) {
     }
   }
 
+  // These two aliases are the controls used by editor tabs. A dedicated font
+  // lets the close glyph be genuinely smaller because product icon themes do
+  // not expose a per-icon font-size. The dirty state uses Phosphor's compact
+  // outlined dot instead of the much larger filled circle.
+  definitions.close = {
+    fontCharacter: `\\${COMPACT_CLOSE_CODE_POINT.toString(16)}`,
+    fontId: CONTROLS_FONT_ID,
+  };
+  definitions['circle-filled'] = {
+    fontCharacter: `\\${glyphs.get('dot-outline')}`,
+    fontId: FONT_ID,
+  };
+
   return Object.fromEntries(Object.entries(definitions).sort(([left], [right]) => left.localeCompare(right)));
+}
+
+function transformPath(opentype, sourcePath, scale, centerX, centerY) {
+  const path = new opentype.Path();
+  path.commands = sourcePath.commands.map((command) => {
+    const transformed = { ...command };
+    for (const key of ['x', 'x1', 'x2']) {
+      if (typeof transformed[key] === 'number') {
+        transformed[key] = centerX + (transformed[key] - centerX) * scale;
+      }
+    }
+    for (const key of ['y', 'y1', 'y2']) {
+      if (typeof transformed[key] === 'number') {
+        transformed[key] = centerY + (transformed[key] - centerY) * scale;
+      }
+    }
+    return transformed;
+  });
+  return path;
+}
+
+function buildControlsFont(opentype, sourceFont, xCodePoint) {
+  const sourceGlyph = sourceFont.charToGlyph(String.fromCodePoint(xCodePoint));
+  const bounds = sourceGlyph.getBoundingBox();
+  const centerX = (bounds.x1 + bounds.x2) / 2;
+  const centerY = (bounds.y1 + bounds.y2) / 2;
+  const emptyPath = new opentype.Path();
+  const closePath = transformPath(
+    opentype,
+    sourceGlyph.path,
+    COMPACT_CLOSE_SCALE,
+    centerX,
+    centerY,
+  );
+  const glyphs = [
+    new opentype.Glyph({
+      name: '.notdef',
+      unicode: 0,
+      advanceWidth: sourceFont.unitsPerEm,
+      path: emptyPath,
+    }),
+    new opentype.Glyph({
+      name: 'compact-close',
+      unicode: COMPACT_CLOSE_CODE_POINT,
+      advanceWidth: sourceGlyph.advanceWidth,
+      path: closePath,
+    }),
+  ];
+
+  return new opentype.Font({
+    familyName: 'Golden Gate Controls',
+    styleName: 'Regular',
+    unitsPerEm: sourceFont.unitsPerEm,
+    ascender: sourceFont.ascender,
+    descender: sourceFont.descender,
+    glyphs,
+    version: 'Version 1.0',
+    description: 'Compact tab controls derived from Phosphor Icons Regular.',
+    copyright: 'Copyright Phosphor Icons. Licensed under the MIT License.',
+    license: 'MIT License',
+    licenseURL: 'https://opensource.org/license/mit',
+  });
 }
 
 async function main() {
@@ -639,6 +740,11 @@ async function main() {
 
   const css = await readFile(regularCssPath, 'utf8');
   const glyphs = parseGlyphs(css);
+  const xCodePoint = Number.parseInt(glyphs.get('x'), 16);
+  const opentypeModule = await import('opentype.js');
+  const opentype = opentypeModule.default ?? opentypeModule;
+  const sourceFont = opentype.loadSync(path.join(path.dirname(regularCssPath), 'Phosphor.ttf'));
+  const controlsFont = buildControlsFont(opentype, sourceFont, xCodePoint);
   const iconDefinitions = buildIconDefinitions(glyphs);
   const theme = {
     $schema: 'vscode://schemas/product-icon-theme',
@@ -646,6 +752,12 @@ async function main() {
       {
         id: FONT_ID,
         src: [{ path: `./fonts/${FONT_FILE}`, format: 'woff2' }],
+        weight: 'normal',
+        style: 'normal',
+      },
+      {
+        id: CONTROLS_FONT_ID,
+        src: [{ path: `./fonts/${CONTROLS_FONT_FILE}`, format: 'truetype' }],
         weight: 'normal',
         style: 'normal',
       },
@@ -660,6 +772,7 @@ async function main() {
 
   await Promise.all([
     copyFile(path.join(path.dirname(regularCssPath), 'Phosphor.woff2'), path.join(fontRoot, FONT_FILE)),
+    writeFile(path.join(fontRoot, CONTROLS_FONT_FILE), Buffer.from(controlsFont.toArrayBuffer())),
     copyFile(path.join(packageRoot, 'LICENSE'), path.join(licenseRoot, 'PHOSPHOR-ICONS-MIT.txt')),
     writeFile(
       path.join(productIconRoot, 'golden-gate-product-icon-theme.json'),
@@ -670,7 +783,7 @@ async function main() {
 
   console.log(
     `Built Golden Gate product icon theme: ${Object.keys(iconDefinitions).length} product IDs, ` +
-    `${new Set(Object.values(ICON_GROUPS).flat()).size} unique aliases, ` +
+    `${NATIVE_LAYOUT_ICON_IDS.size} native layout fallbacks, ` +
     `${Object.keys(ICON_GROUPS).length} Phosphor glyph groups.`,
   );
 }
