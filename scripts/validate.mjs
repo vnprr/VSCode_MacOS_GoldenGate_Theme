@@ -196,6 +196,13 @@ async function validateThemes(packageJson) {
     if (!/^#[0-9a-f]{6}$/i.test(theme.colors["tab.activeBackground"])) {
       fail(`${relativePath}: tab.activeBackground must be an opaque fade-matched surface`);
     }
+    if (
+      theme.colors["tab.hoverBackground"] !== theme.colors["tab.activeBackground"] ||
+      theme.colors["tab.unfocusedHoverBackground"] !==
+        theme.colors["tab.unfocusedActiveBackground"]
+    ) {
+      fail(`${relativePath}: tab hover fades must match active tab surfaces`);
+    }
     const neutralDropSurfaces = [
       "list.dropBackground",
       "sideBar.dropBackground",
@@ -377,8 +384,16 @@ async function validateOneClickExperience(packageJson) {
   if (!(packageJson.activationEvents ?? []).includes("*")) {
     fail('package.json: one-click appearance manager must activate with "*"');
   }
-  if ((packageJson.contributes?.commands ?? []).length > 0) {
-    fail("package.json: the appearance must not require contributed commands");
+  const commandIds = new Set(
+    (packageJson.contributes?.commands ?? []).map((command) => command.command)
+  );
+  for (const command of [
+    "macosGoldenGate.copilot.enable",
+    "macosGoldenGate.copilot.disable"
+  ]) {
+    if (!commandIds.has(command)) {
+      fail(`package.json: missing synchronized Copilot toolbar action ${command}`);
+    }
   }
 
   const preset = await readJson("appearance-preset.json");

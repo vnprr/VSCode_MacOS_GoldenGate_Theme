@@ -121,12 +121,16 @@ const palettes = {
 
 function makeColors(p) {
   const transparent = "#00000000";
-  // Exact opaque composites of Modern UI's foreground mixes over the chrome
-  // surface. Matching the generated fade color to the rendered tab makes the
-  // square fade layer visually disappear.
-  const tabActiveSurface = p.type === "dark" ? "#464646" : "#DFDFDF";
-  const tabInactiveSurface = p.type === "dark" ? "#2B2B2B" : "#ECECEC";
-  const tabHoverSurface = p.type === "dark" ? "#313131" : "#E7E7E7";
+  // Modern UI leaves the tab header transparent and draws tabs as foreground
+  // mixes over the editor surface. VS Code separately generates an opaque
+  // label-fade from these tokens, so they must be the exact rendered mixes or
+  // the fade ends in a visible square.
+  const tabActiveSurface = p.type === "dark" ? "#3D3D3D" : "#E9E9E9";
+  const tabInactiveSurface = p.type === "dark" ? "#1F1F1F" : "#F6F6F6";
+  // VS Code applies tab.hoverBackground to the label fade of active tabs too,
+  // although Modern UI keeps their active surface unchanged. Using the active
+  // composite for hover keeps the tab and its fade identical in both states.
+  const tabHoverSurface = tabActiveSurface;
   return {
     foreground: p.text,
     disabledForeground: p.disabled,

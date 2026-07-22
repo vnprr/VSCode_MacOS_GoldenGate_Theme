@@ -2,7 +2,7 @@
   "name": "macos-golden-gate",
   "displayName": "macOS Golden Gate",
   "description": "A native-feeling macOS 27 Golden Gate theme suite for Visual Studio Code, grounded in Apple's refined Liquid Glass design.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "publisher": "jakub-local",
   "license": "MIT",
   "icon": "assets/extension-icon.png",
@@ -65,7 +65,51 @@
         "label": "macOS Golden Gate — Symbols",
         "path": "./product-icons/golden-gate-product-icon-theme.json"
       }
-    ]
+    ],
+    "commands": [
+      {
+        "command": "macosGoldenGate.copilot.disable",
+        "title": "Disable Copilot Inline Suggestions",
+        "category": "macOS Golden Gate",
+        "icon": {
+          "light": "./assets/copilot-toggle-on-light.svg",
+          "dark": "./assets/copilot-toggle-on-dark.svg"
+        }
+      },
+      {
+        "command": "macosGoldenGate.copilot.enable",
+        "title": "Enable Copilot Inline Suggestions",
+        "category": "macOS Golden Gate",
+        "icon": {
+          "light": "./assets/copilot-toggle-off-light.svg",
+          "dark": "./assets/copilot-toggle-off-dark.svg"
+        }
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "macosGoldenGate.copilot.disable",
+          "when": "github.copilot.extensionUnification.activated && github.copilot.activated && config.editor.inlineSuggest.enabled && github.copilot.completions.enabled",
+          "group": "navigation@100"
+        },
+        {
+          "command": "macosGoldenGate.copilot.enable",
+          "when": "github.copilot.extensionUnification.activated && github.copilot.activated && !(config.editor.inlineSuggest.enabled && github.copilot.completions.enabled)",
+          "group": "navigation@100"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "macosGoldenGate.copilot.disable",
+          "when": "false"
+        },
+        {
+          "command": "macosGoldenGate.copilot.enable",
+          "when": "false"
+        }
+      ]
+    }
   },
   "scripts": {
     "build:themes": "node scripts/build-themes.mjs",
