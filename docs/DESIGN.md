@@ -19,16 +19,16 @@ Poniższe wartości są statycznym przybliżeniem na potrzeby API VS Code — ni
 
 | Rola | Light | Dark |
 | --- | --- | --- |
-| Content canvas | `#F4EFE9` | `#201B18` |
-| Editor | `#FAF7F2` | `#231E1B` |
-| Navigation glass | `#EEE4DBE8` | `#322A26E6` |
-| Floating surface | `#FFF9F4F2` | `#3A302BF2` |
-| Primary text | `#1A1715` | `#F5F0EA` |
-| Secondary text | `#625C57` | `#B9AFA7` |
-| Golden Gate accent | `#AC7F5E` | `#B78A66` |
-| Separator | `#6D5E5030` | `#FFFFFF1F` |
+| Content canvas | `#F2F2F7` | `#0D0D0F` |
+| Editor | `#FFFFFF` | `#111113` |
+| Navigation glass | `#F2F2F7E8` | `#1C1C1EE6` |
+| Floating surface | `#FFFFFFF2` | `#2C2C2EF2` |
+| Primary text | `#1D1D1F` | `#F5F5F7` |
+| Secondary text | `#5C5C61` | `#B8B8BD` |
+| Interactive accent | `#007AFF` | `#0A84FF` |
+| Separator | `#0000001F` | `#FFFFFF1F` |
 
-Ciepłe neutrals pochodzą z tonu oficjalnej grafiki promocyjnej Golden Gate. Brązowy akcent odpowiada publicznym wartościom systemowego Brown, ale sposób użycia i kompozycja są autorską interpretacją.
+Nazwa Golden Gate nie steruje paletą. Powierzchnie są neutralne i zbliżone do białego albo czarnego szkła, a systemowy niebieski pojawia się tylko przy interakcji, zaznaczeniu i stanie fokusu. To lepiej oddaje zasadę Liquid Glass: materiał ma wspierać hierarchię i treść, a nie narzucać całemu interfejsowi dekoracyjny tint.
 
 Kolory błędów, ostrzeżeń, powodzenia i informacji są kontrastowo dostosowanymi przybliżeniami dynamicznych kolorów systemowych Apple. Podświetlanie kodu celowo zachowuje więcej barw niż natywne kontrolki: informacja semantyczna w edytorze ma pierwszeństwo przed dekoracją.
 

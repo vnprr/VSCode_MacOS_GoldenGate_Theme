@@ -2,7 +2,7 @@
   "name": "macos-golden-gate",
   "displayName": "macOS Golden Gate",
   "description": "A native-feeling macOS 27 Golden Gate theme suite for Visual Studio Code, grounded in Apple's refined Liquid Glass design.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "jakub-local",
   "license": "MIT",
   "icon": "assets/extension-icon.png",
@@ -27,7 +27,7 @@
     "ui"
   ],
   "galleryBanner": {
-    "color": "#201B18",
+    "color": "#1C1C1E",
     "theme": "dark"
   },
   "contributes": {
@@ -65,7 +65,7 @@
     "build": "npm run build:themes && npm run build:file-icons && npm run build:product-icons",
     "check": "node scripts/validate.mjs",
     "prepare:dist": "node -e \"require('node:fs').mkdirSync('dist', { recursive: true })\"",
-    "package": "npm run build && npm run check && npm run prepare:dist && vsce package --allow-missing-repository --out dist/macos-golden-gate-0.1.0.vsix"
+    "package": "npm run build && npm run check && npm run prepare:dist && vsce package --allow-missing-repository --out dist/macos-golden-gate-0.1.1.vsix"
   },
   "devDependencies": {
     "@phosphor-icons/web": "2.1.2",

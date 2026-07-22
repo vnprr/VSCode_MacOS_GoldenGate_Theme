@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
   <defs>
     <linearGradient id="folder" x1="2.2" y1="2.4" x2="13.7" y2="14.2" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#E7B85F" stop-opacity=".88"/>
-      <stop offset="1" stop-color="#E7B85F" stop-opacity=".82"/>
+      <stop stop-color="#7FAAE6" stop-opacity=".88"/>
+      <stop offset="1" stop-color="#7FAAE6" stop-opacity=".82"/>
     </linearGradient>
   </defs>
-  <path d="M1.55 4.05c0-.85.69-1.54 1.54-1.54h2.77l1.4 1.55h5.65c.85 0 1.54.69 1.54 1.54v6.86c0 .85-.69 1.54-1.54 1.54H3.09c-.85 0-1.54-.69-1.54-1.54V4.05Z" fill="url(#folder)" stroke="#F3D799" stroke-opacity=".72" stroke-width=".68" stroke-linejoin="round"/>
+  <path d="M1.55 4.05c0-.85.69-1.54 1.54-1.54h2.77l1.4 1.55h5.65c.85 0 1.54.69 1.54 1.54v6.86c0 .85-.69 1.54-1.54 1.54H3.09c-.85 0-1.54-.69-1.54-1.54V4.05Z" fill="url(#folder)" stroke="#D6E7FF" stroke-opacity=".72" stroke-width=".68" stroke-linejoin="round"/>
   <path d="M2.35 5.3c2.65-.62 7.55-.62 11.02.04" fill="none" stroke="#FFFFFF" stroke-width=".62" stroke-linecap="round" opacity=".35"/>
 </svg>

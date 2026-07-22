@@ -5,7 +5,7 @@ Kompletny, lokalny pakiet wyglądu dla VS Code 1.129+: jasny i ciemny motyw, iko
 ## Co otrzymujesz
 
 - `macOS Golden Gate — Light` i `macOS Golden Gate — Dark`, przełączane razem z wyglądem systemu.
-- Ciepłą paletę espresso, taupe i champagne z systemowymi kolorami semantycznymi.
+- Neutralną paletę bieli, czerni i chłodnych szarości z oszczędnym systemowym niebieskim akcentem.
 - Półprzezroczyste wizualnie warstwy nawigacji, jednolity toolbar i czytelny content area.
 - Zaokrąglony zestaw product icons oparty na otwartym Phosphor Icons Regular.
 - 330 lekkich ikon SVG dla plików i folderów: osobne warianty jasne i ciemne.
@@ -17,7 +17,7 @@ Kompletny, lokalny pakiet wyglądu dla VS Code 1.129+: jasny i ciemny motyw, iko
 Pakiet jest budowany do:
 
 ```text
-dist/macos-golden-gate-0.1.0.vsix
+dist/macos-golden-gate-0.1.1.vsix
 ```
 
 Instalacja z terminala na tym Macu:

@@ -5,7 +5,7 @@
       <stop offset="1" stop-color="#6DAEE7" stop-opacity=".9"/>
     </linearGradient>
   </defs>
-  <path d="M1.55 4.05c0-.85.69-1.54 1.54-1.54h2.77l1.4 1.55h5.65c.85 0 1.54.69 1.54 1.54v6.86c0 .85-.69 1.54-1.54 1.54H3.09c-.85 0-1.54-.69-1.54-1.54V4.05Z" fill="url(#folder)" stroke="#8A6731" stroke-opacity=".82" stroke-width=".68" stroke-linejoin="round"/>
+  <path d="M1.55 4.05c0-.85.69-1.54 1.54-1.54h2.77l1.4 1.55h5.65c.85 0 1.54.69 1.54 1.54v6.86c0 .85-.69 1.54-1.54 1.54H3.09c-.85 0-1.54-.69-1.54-1.54V4.05Z" fill="url(#folder)" stroke="#526D91" stroke-opacity=".82" stroke-width=".68" stroke-linejoin="round"/>
   <path d="M2.35 5.3c2.65-.62 7.55-.62 11.02.04" fill="none" stroke="#FFFFFF" stroke-width=".62" stroke-linecap="round" opacity=".52"/>
   <rect x="7.02" y="8.2" width="6.25" height="4.15" rx="1.86" fill="#FFFFFF" fill-opacity=".6" stroke="#FFFFFF" stroke-opacity=".74" stroke-width=".42"/>
   <text x="10.15" y="11.03" text-anchor="middle" fill="#222A35" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif" font-size="3.9" font-weight="760" letter-spacing="-.1">VS</text>

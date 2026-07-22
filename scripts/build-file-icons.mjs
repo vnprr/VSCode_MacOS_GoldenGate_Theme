@@ -109,8 +109,8 @@ const fileArtwork = [
 
 // id, short glyph, accent. Blank glyphs are used by the generic/root folders.
 const folderArtwork = [
-  ['folder', '', '#E7B85F'],
-  ['root', '/', '#E2AC50'],
+  ['folder', '', '#7FAAE6'],
+  ['root', '/', '#6E9FDF'],
   ['source', '<>', '#70A9ED'],
   ['app', 'APP', '#7C9FE7'],
   ['components', 'UI', '#A18DE9'],
@@ -320,7 +320,7 @@ function fileSvg([, label, accent], mode) {
 
 function folderSvg([, label, accent], mode, expanded) {
   const dark = mode === 'dark';
-  const outline = dark ? '#F3D799' : '#8A6731';
+  const outline = dark ? '#D6E7FF' : '#526D91';
   const backOpacity = dark ? '.88' : '.94';
   const frontOpacity = dark ? '.82' : '.9';
   const glyph = label ? `

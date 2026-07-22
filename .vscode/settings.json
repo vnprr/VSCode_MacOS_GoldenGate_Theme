@@ -18,7 +18,7 @@
 
   "workbench.editor.showTabs": "multiple",
   "workbench.editor.tabActionLocation": "left",
-  "workbench.editor.tabSizing": "shrink",
+  "workbench.editor.tabSizing": "fit",
   "workbench.editor.pinnedTabSizing": "compact",
   "window.density.editorTabHeight": "compact",
   "workbench.editor.highlightModifiedTabs": true,
