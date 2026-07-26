@@ -2,7 +2,7 @@
   "name": "macos-golden-gate",
   "displayName": "macOS Golden Gate",
   "description": "A native-feeling macOS 27 Golden Gate theme suite for Visual Studio Code, grounded in Apple's refined Liquid Glass design.",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "publisher": "jakub-local",
   "license": "MIT",
   "icon": "assets/extension-icon.png",
@@ -69,20 +69,22 @@
     "commands": [
       {
         "command": "macosGoldenGate.copilot.disable",
-        "title": "Disable Copilot Inline Suggestions",
+        "title": "GitHub Copilot inline suggestions are on — click to turn them off",
         "category": "macOS Golden Gate",
+        "enablement": "github.copilot.extensionUnification.activated && github.copilot.activated && config.editor.inlineSuggest.enabled && github.copilot.completions.enabled",
         "icon": {
-          "light": "./assets/copilot-toggle-on-light.svg",
-          "dark": "./assets/copilot-toggle-on-dark.svg"
+          "light": "./assets/copilot-active-light.svg",
+          "dark": "./assets/copilot-active-dark.svg"
         }
       },
       {
         "command": "macosGoldenGate.copilot.enable",
-        "title": "Enable Copilot Inline Suggestions",
+        "title": "GitHub Copilot inline suggestions are off — click to turn them on",
         "category": "macOS Golden Gate",
+        "enablement": "github.copilot.extensionUnification.activated && github.copilot.activated && !(config.editor.inlineSuggest.enabled && github.copilot.completions.enabled)",
         "icon": {
-          "light": "./assets/copilot-toggle-off-light.svg",
-          "dark": "./assets/copilot-toggle-off-dark.svg"
+          "light": "./assets/copilot-inactive-light.svg",
+          "dark": "./assets/copilot-inactive-dark.svg"
         }
       }
     ],

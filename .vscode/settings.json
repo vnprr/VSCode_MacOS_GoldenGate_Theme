@@ -11,6 +11,7 @@
   "workbench.reduceTransparency": "on",
   "workbench.activityBar.location": "top",
   "workbench.activityBar.autoHide": false,
+  "workbench.activityBar.compact": false,
   "workbench.sideBar.location": "left",
   "workbench.navigationControl.enabled": true,
   "workbench.layoutControl.enabled": true,
@@ -22,7 +23,7 @@
   "workbench.editor.tabSizing": "shrink",
   "workbench.editor.pinnedTabSizing": "compact",
   "workbench.editor.titleScrollbarVisibility": "auto",
-  "window.density.editorTabHeight": "compact",
+  "window.density.editorTabHeight": "default",
   "workbench.editor.highlightModifiedTabs": true,
   "workbench.editor.wrapTabs": false,
 

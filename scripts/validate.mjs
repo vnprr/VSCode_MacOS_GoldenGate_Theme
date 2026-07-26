@@ -428,6 +428,12 @@ async function validateOneClickExperience(packageJson) {
   if (preset["workbench.editor.tabSizing"] !== "shrink") {
     fail("appearance-preset.json: tabSizing must use the clean drag preview path");
   }
+  if (preset["window.density.editorTabHeight"] !== "default") {
+    fail("appearance-preset.json: editor tabs must match the standard floating controls height");
+  }
+  if (preset["workbench.activityBar.compact"] !== false) {
+    fail("appearance-preset.json: floating activity controls must use their standard height");
+  }
   if (
     preset["editor.scrollbar.vertical"] !== "auto" ||
     preset["editor.scrollbar.horizontal"] !== "auto" ||
